@@ -2,20 +2,26 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-
 #define LETTERS_TO_KEEP 3
 
-void checkLetter(char word[], int *randomIndices, char letter)
+void checkLetter(char originalWord[], char modifiedWord[], int *randomIndices, char letter, int randomIndicesLength)
 {
-    // First check if letter is in word,
-    // If letter exists, replace _ with that letter at the right index.
+    for (int i = 0; i < randomIndicesLength; i++)
+    {
+        if (letter == originalWord[randomIndices[i]])
+        {
+            modifiedWord[randomIndices[i]] = letter;
+            break;
+        }
+    }
 }
+
 
 int hasValue(int *array, int arrayLength, int val)
 {
     for (int i = 0; i < arrayLength; i++)
     {
-        if (*(array + i) == val)
+        if (array[i] == val)
         {
             return 1;
         }
@@ -23,11 +29,10 @@ int hasValue(int *array, int arrayLength, int val)
     return 0;
 }
 
-int *getRandomIndices(int stringLength)
-{
-    static int randomIndices[50];
 
-    for (int j = 0; j < 50; j++)
+void getRandomIndices(int stringLength, int *randomIndices, int randomIndicesLength)
+{
+    for (int j = 0; j < randomIndicesLength; j++)
     {
         randomIndices[j] = 999;
     }
@@ -36,32 +41,40 @@ int *getRandomIndices(int stringLength)
     for (int i = 0; i < stringLength - LETTERS_TO_KEEP; i++){
         starting:
             int random_index = rand() % stringLength;
-            printf("i is %d and random_index is %d\n", i, random_index);
-            if (hasValue(randomIndices, (sizeof(randomIndices) / sizeof(randomIndices[0])), random_index) == 1)
+            if (hasValue(randomIndices, randomIndicesLength, random_index) == 1)
                 goto starting;
         randomIndices[i] = random_index;
-        printf("Ending loop\n");
+    }
+}
+
+
+int* wordCreator(char word[], int *randomIndices, int randomIndicesLength) {
+    int stringLength = strlen(word);
+    getRandomIndices(stringLength, randomIndices, randomIndicesLength);
+    for (int i = 0; i < stringLength - LETTERS_TO_KEEP; i++) {
+        word[randomIndices[i]] = '_';
     }
     return randomIndices;
 }
 
-void wordCreator(char word[]) {
-    int stringLength = strlen(word);
-    int *randomIndices = getRandomIndices(stringLength);
-
-    for (int i = 0; i < stringLength - LETTERS_TO_KEEP; i++) {
-        int randomIndex = *(randomIndices + i);
-        *(word + randomIndex) = '_';
-    }
-}
 
 int main() {
 
-    // int user_input, name_len;
-    // char name[] = "Pikachu";
-    // name_len = strlen(name);
-    static char name[] = "Prayag";
-    wordCreator(name);
-    printf("%s", name);
+    char user_input;
+
+    char currentWord[] = "pikachu";
+    char originalWord[] = "pikachu";
+    int randomIndices[50];
+    int randomIndicesLength = sizeof(randomIndices)/sizeof(randomIndices[0]);
+    wordCreator(currentWord, randomIndices, randomIndicesLength);
+
+    do {
+        printf("%s\n", currentWord);
+        scanf("\n%c", &user_input);
+        checkLetter(originalWord, currentWord, randomIndices, user_input, randomIndicesLength);
+    } while (strcmp(currentWord, originalWord));
+
+    printf("%s\n", currentWord);
+    
     return 0;
 }
