@@ -4,16 +4,27 @@
 #include <time.h>
 #define LETTERS_TO_KEEP 3
 
-void checkLetter(char originalWord[], char modifiedWord[], int *randomIndices, char letter, int randomIndicesLength)
+void drawHangMan(int hangman_value){
+    char hangman[][50] = {
+        "-----\n  |\n", "  o  \n", " /", "|", "\\ \n", "  |  \n", " /", " \\ \n"
+    };
+
+    for (int i = 0; i<hangman_value; i++)
+        printf("%s", hangman[i]);
+}
+
+int checkLetter(char originalWord[], char modifiedWord[], int *randomIndices, char letter, int randomIndicesLength)
 {
     for (int i = 0; i < randomIndicesLength; i++)
     {
         if (letter == originalWord[randomIndices[i]])
         {
             modifiedWord[randomIndices[i]] = letter;
+            return 1;
             break;
         }
     }
+    return 0;
 }
 
 
@@ -61,17 +72,28 @@ int* wordCreator(char word[], int *randomIndices, int randomIndicesLength) {
 int main() {
 
     char user_input;
-
-    char currentWord[] = "pikachu";
-    char originalWord[] = "pikachu";
+    int hangman_value = 0;
+    int temp;
+    char currentWord[] = "PIKACHU";
+    char originalWord[] = "PIKACHU";
     int randomIndices[50];
     int randomIndicesLength = sizeof(randomIndices)/sizeof(randomIndices[0]);
     wordCreator(currentWord, randomIndices, randomIndicesLength);
 
     do {
-        printf("%s\n", currentWord);
+        if (hangman_value == 8)
+            break;
+        
+        printf("\n%s\n", currentWord);
         scanf("\n%c", &user_input);
-        checkLetter(originalWord, currentWord, randomIndices, user_input, randomIndicesLength);
+        temp = checkLetter(originalWord, currentWord, randomIndices, user_input, randomIndicesLength);
+
+        if (temp == 0)
+            hangman_value += 1;
+            printf("\n");
+        drawHangMan(hangman_value);
+        
+        
     } while (strcmp(currentWord, originalWord));
 
     printf("%s\n", currentWord);
