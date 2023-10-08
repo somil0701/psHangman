@@ -4,6 +4,15 @@
 #include <time.h>
 #define LETTERS_TO_KEEP 3
 
+
+void drawScoreboard(int score){
+    printf("+-------------+-----+\n");
+    printf("| SCORE BOARD |  %d  |\n", score);
+    printf("+-------------+-----+\n");
+}
+
+
+
 void drawHangMan(int hangman_value){
     char hangman[][50] = {
         "-----\n  |\n", "  o  \n", " /", "|", "\\ \n", "  |  \n", " /", " \\ \n"
@@ -13,16 +22,18 @@ void drawHangMan(int hangman_value){
         printf("%s", hangman[i]);
 }
 
+
 int checkLetter(char originalWord[], char modifiedWord[], int *randomIndices, char letter, int randomIndicesLength)
 {
     for (int i = 0; i < randomIndicesLength; i++)
     {
-        if (letter == originalWord[randomIndices[i]])
+        if (letter == originalWord[randomIndices[i]] && randomIndices[i] != -1)
         {
             modifiedWord[randomIndices[i]] = letter;
+            randomIndices[i] = -1;
             return 1;
-            break;
         }
+        
     }
     return 0;
 }
@@ -68,35 +79,45 @@ int* wordCreator(char word[], int *randomIndices, int randomIndicesLength) {
     return randomIndices;
 }
 
-
 int main() {
 
-    char user_input;
-    int hangman_value = 0;
-    int temp;
-    char currentWord[] = "PIKACHU";
-    char originalWord[] = "PIKACHU";
-    int randomIndices[50];
-    int randomIndicesLength = sizeof(randomIndices)/sizeof(randomIndices[0]);
-    wordCreator(currentWord, randomIndices, randomIndicesLength);
+    while (1){
+    
+        srand(time(0));
+        char user_input;
+        char words[][50] = {"PIKACHU", "BULBASAUR", "CHARMANDER", "SQUIRTLE", "IVYSAUR", "VENUSAUR", "CHARMANDER", "CHARMELEON", "CHARIZARD", "BLASTOISE"};
+        int random_number = rand() % 10;
+        char currentWord[30], originalWord[30];
 
-    do {
+        strcpy(currentWord, words[random_number]);
+        strcpy(originalWord, currentWord);
+
+        int hangman_value, user_score = 0;
+        int randomIndices[50];
+        int randomIndicesLength = sizeof(randomIndices)/sizeof(randomIndices[0]);
+
+        wordCreator(currentWord, randomIndices, randomIndicesLength);
+        drawScoreboard(user_score);
+
+
+        do {
         if (hangman_value == 8)
             break;
         
         printf("\n%s\n", currentWord);
         scanf("\n%c", &user_input);
-        temp = checkLetter(originalWord, currentWord, randomIndices, user_input, randomIndicesLength);
+        if(checkLetter(originalWord, currentWord, randomIndices, user_input, randomIndicesLength) == 0) {
 
-        if (temp == 0)
             hangman_value += 1;
             printf("\n");
+        }
+        system("clear");
         drawHangMan(hangman_value);
-        
-        
-    } while (strcmp(currentWord, originalWord));
+        } while (strcmp(currentWord, originalWord));
 
-    printf("%s\n", currentWord);
-    
+        
+        user_score += 1;
+        printf("%s\n", currentWord);
+    }
     return 0;
 }
