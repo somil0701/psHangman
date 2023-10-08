@@ -12,13 +12,13 @@ void drawScoreboard(int score){
 }
 
 
-
 void drawHangMan(int hangman_value){
     char hangman[][50] = {
         "-----\n  |\n", "  o  \n", " /", "|", "\\ \n", "  |  \n", " /", " \\ \n"
     };
 
-    for (int i = 0; i<hangman_value; i++)
+    printf(hangman[0]);
+    for (int i = 1; i<hangman_value; i++)
         printf("%s", hangman[i]);
 }
 
@@ -79,43 +79,47 @@ int* wordCreator(char word[], int *randomIndices, int randomIndicesLength) {
     return randomIndices;
 }
 
+
 int main() {
 
+    char user_input;
+    char words[][50] = {"PIKACHU", "BULBASAUR", "CHARMANDER", "SQUIRTLE", "IVYSAUR", "VENUSAUR", "CHARMANDER", "CHARMELEON", "CHARIZARD", "BLASTOISE"};
+    int user_score = 0;
+
     while (1){
-    
-        srand(time(0));
-        char user_input;
-        char words[][50] = {"PIKACHU", "BULBASAUR", "CHARMANDER", "SQUIRTLE", "IVYSAUR", "VENUSAUR", "CHARMANDER", "CHARMELEON", "CHARIZARD", "BLASTOISE"};
-        int random_number = rand() % 10;
-        char currentWord[30], originalWord[30];
+        beginning:
+            system("clear");
+            srand(time(0));
+            int random_number = rand() % 10;
+            char currentWord[30], originalWord[30];
 
-        strcpy(currentWord, words[random_number]);
-        strcpy(originalWord, currentWord);
+            strcpy(currentWord, words[random_number]);
+            strcpy(originalWord, currentWord);
 
-        int hangman_value, user_score = 0;
-        int randomIndices[50];
-        int randomIndicesLength = sizeof(randomIndices)/sizeof(randomIndices[0]);
+            int hangman_value = 0;
+            int randomIndices[50];
+            int randomIndicesLength = sizeof(randomIndices)/sizeof(randomIndices[0]);
 
-        wordCreator(currentWord, randomIndices, randomIndicesLength);
-        drawScoreboard(user_score);
-
+            wordCreator(currentWord, randomIndices, randomIndicesLength);
 
         do {
-        if (hangman_value == 8)
-            break;
-        
-        printf("\n%s\n", currentWord);
-        scanf("\n%c", &user_input);
-        if(checkLetter(originalWord, currentWord, randomIndices, user_input, randomIndicesLength) == 0) {
+            drawScoreboard(user_score);
+            drawHangMan(hangman_value);
+            if (hangman_value == 8) {
+                user_score--;
+                goto beginning;
+            }
 
-            hangman_value += 1;
-            printf("\n");
-        }
-        system("clear");
-        drawHangMan(hangman_value);
+            printf("\n%s\n", currentWord);
+            scanf("\n%c", &user_input);
+            if(checkLetter(originalWord, currentWord, randomIndices, user_input, randomIndicesLength) == 0) {
+
+                hangman_value += 1;
+                printf("\n");
+            }
+            system("clear");
         } while (strcmp(currentWord, originalWord));
 
-        
         user_score += 1;
         printf("%s\n", currentWord);
     }
